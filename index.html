@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>arthX — Don't Just Earn. Build What Comes Next.</title>
+
+  <!-- critical, render-blocking-safe: guarantees maroon (never white/black) from
+       the very first paint, before style.css has even finished loading -->
+  <style>html,body{background:#1a0813}</style>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- preload the images that gate their sections, so the ₹ reveal and the
+       cinematic sequence never show a blank frame while assets are fetching.
+       NOTE: filenames matched to the actual delivered assets (.png) — the
+       previous build referenced background2.jpeg / background3.jpeg, which
+       do not exist, and was the root cause of the broken / repeating image. -->
+  <link rel="preload" as="image" href="background.png">
+  <link rel="preload" as="image" href="logo.png">
+  <link rel="preload" as="image" href="background2.png">
+</head>
+<body>
+
+  <!-- =========================
+       OPENING / ₹ PORTAL
+       (existing architecture — preserved, not rebuilt)
+  ========================== -->
+  <div id="door-screen" aria-hidden="false">
+    <div class="door-preloader" id="doorPreloader">
+
+      <div class="door-side door-side-left mono">INDIA</div>
+      <div class="door-side door-side-right mono">FINANCE</div>
+
+      <div class="door-center">
+        <h1>A₹thX</h1>
+        <p>for India</p>
+      </div>
+
+      <div class="door-loading">
+        <span class="door-loading-line"><i id="loadFill"></i></span>
+        <span class="mono" id="loadingText">Loading your future...</span>
+      </div>
+
+      <div class="door-bottom">
+        <p class="door-bottom-brand">arthX</p>
+        <p class="door-bottom-tag mono">DON'T JUST EARN.</p>
+      </div>
+    </div>
+
+    <svg id="doorMaskSvg" class="door-mask-svg" aria-hidden="true">
+      <defs>
+        <mask id="rupeeMask" maskUnits="userSpaceOnUse" mask-type="luminance">
+          <rect id="maskBg" x="0" y="0" width="100%" height="100%" fill="white"></rect>
+          <text id="maskRupeeText"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-family="Fraunces, serif"
+                font-weight="500"
+                fill="black">₹</text>
+        </mask>
+      </defs>
+      <rect class="door-mask-cover"
+            x="0" y="0"
+            width="100%" height="100%"
+            mask="url(#rupeeMask)"/>
+    </svg>
+  </div>
+
+  <main id="site">
+
+    <!-- =========================
+         ERA-STYLE SCROLL INDICATOR
+         independent of the logo, fixed to the viewport edge
+    ========================== -->
+    <div class="scroll-indicator" id="scrollIndicator" aria-hidden="true">
+      <span class="mono scroll-indicator-value" id="scrollIndicatorValue">01</span>
+      <span class="scroll-indicator-line"><i id="scrollIndicatorFill"></i></span>
+      <span class="mono scroll-indicator-label">SCROLL</span>
+      <span class="scroll-indicator-arrow">↓</span>
+    </div>
+
+    <!-- =========================
+         NAV — minimal, persistent, no solid background.
+         Logo enlarged. "arthX AI" now lives in the visible
+         nav, not only inside the full menu.
+    ========================== -->
+    <header class="nav" id="siteNav">
+      <a class="brand" href="#heroStory" aria-label="arthX home">
+        <span class="brand-seal">
+          <svg viewBox="0 0 100 100" aria-hidden="true">
+            <defs>
+              <path id="topArc" d="M 12 50 A 38 38 0 0 1 88 50" />
+              <path id="bottomArc" d="M 88 50 A 38 38 0 0 1 12 50" />
+            </defs>
+            <g class="brand-orbit">
+              <text class="brand-orbit-text">
+                <textPath href="#topArc" startOffset="50%" text-anchor="middle">arthX</textPath>
+              </text>
+              <text class="brand-orbit-text">
+                <textPath href="#bottomArc" startOffset="50%" text-anchor="middle">arthX</textPath>
+              </text>
+            </g>
+          </svg>
+          <img class="brand-mark-icon" src="logo.png" alt="" aria-hidden="true">
+        </span>
+        <strong>arthX</strong>
+      </a>
+
+      <div class="nav-right">
+        <a class="nav-ai-link" href="#finy">
+          <span class="mono">arthX AI</span>
+        </a>
+        <button class="menu-trigger" id="menuTrigger" aria-label="Open menu" aria-expanded="false" aria-controls="menuOverlay">
+          <span class="menu-trigger-lines"><i></i><i></i></span>
+          <span class="mono">MENU</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- =========================
+         FULL-SCREEN MENU OVERLAY
+    ========================== -->
+    <div class="menu-overlay" id="menuOverlay" aria-hidden="true">
+      <div class="menu-overlay-inner">
+
+        <div class="menu-overlay-head">
+          <span class="menu-overlay-brand">arthX</span>
+          <button class="menu-close" id="menuClose" aria-label="Close menu">
+            <span class="mono">CLOSE</span>
+            <span class="menu-close-x"><i></i><i></i></span>
+          </button>
+        </div>
+
+        <nav class="menu-list" id="menuList">
+          <ul class="menu-primary">
+            <li class="menu-section-label mono">MAIN</li>
+            <li class="menu-item"><a href="#">Dashboard</a></li>
+            <li class="menu-item"><a href="#">My arthX Profile</a></li>
+
+            <li class="menu-item menu-group" data-group="money">
+              <button class="menu-group-toggle" aria-expanded="false">
+                <span>Money</span><span class="menu-group-icon"></span>
+              </button>
+              <div class="menu-sub-wrap">
+                <ul>
+                  <li><a href="#">Overview</a></li>
+                  <li><a href="#">Expenses</a></li>
+                  <li><a href="#">Net Worth</a></li>
+                </ul>
+              </div>
+            </li>
+
+            <li class="menu-item menu-group" data-group="learn">
+              <button class="menu-group-toggle" aria-expanded="false">
+                <span>Learn</span><span class="menu-group-icon"></span>
+              </button>
+              <div class="menu-sub-wrap">
+                <ul>
+                  <li><a href="#learn">Academy</a></li>
+                  <li><a href="#learn">Asset Classes</a></li>
+                </ul>
+              </div>
+            </li>
+
+            <li class="menu-item menu-group" data-group="build">
+              <button class="menu-group-toggle" aria-expanded="false">
+                <span>Build</span><span class="menu-group-icon"></span>
+              </button>
+              <div class="menu-sub-wrap">
+                <ul>
+                  <li><a href="#build">Portfolio Builder</a></li>
+                  <li><a href="#build">Portfolio Lab</a></li>
+                </ul>
+              </div>
+            </li>
+
+            <li class="menu-item menu-group" data-group="invest">
+              <button class="menu-group-toggle" aria-expanded="false">
+                <span>Invest</span><span class="menu-group-icon"></span>
+              </button>
+              <div class="menu-sub-wrap">
+                <ul>
+                  <li><a href="#">My Portfolio</a></li>
+                  <li><a href="#">Portfolio Health</a></li>
+                </ul>
+              </div>
+            </li>
+
+            <li class="menu-section-label mono">SERVICES</li>
+            <li class="menu-item"><a href="#">Tax Centre</a></li>
+            <li class="menu-item"><a href="#">Safety Centre</a></li>
+
+            <li class="menu-item menu-group" data-group="enterprise">
+              <button class="menu-group-toggle" aria-expanded="false">
+                <span>Enterprise</span><span class="menu-group-icon"></span>
+              </button>
+              <div class="menu-sub-wrap">
+                <ul>
+                  <li><a href="#enterprise">Business Assessment</a></li>
+                  <li><a href="#enterprise">Market Analysis</a></li>
+                  <li><a href="#enterprise">Scheme Calculator</a></li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+
+          <ul class="menu-secondary">
+            <li class="menu-section-label mono">OTHER</li>
+            <li class="menu-item"><a href="#finy">Ask arthX</a></li>
+            <li class="menu-item"><a href="#">Challenges</a></li>
+            <li class="menu-item"><a href="#">Settings</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+    <!-- ======================================================
+         HERO — IMAGE 01 / background.png
+         ONE tall image, panned top → bottom. Never zoomed.
+         ~9 viewport-heights of scroll, 5 copy stages.
+    ======================================================= -->
+    <section id="heroStory" class="hero-story" data-nav-mode="light">
+      <div class="hero-pin">
+
+        <!-- This complete layer pans. Hotspots + lines stay attached to the image. -->
+        <div class="hero-canvas" id="heroCanvas">
+          <img src="background.png"
+               class="hero-image"
+               id="heroImage"
+               alt="Bombay Stock Exchange tower rising above palm trees — arthX Image 01">
+
+          <!-- subtle readable overlay -->
+          <div class="hero-shade"></div>
+
+          <!-- faint lines, coordinates are in image percentages -->
+          <svg class="hotspot-lines"
+               viewBox="0 0 100 100"
+               preserveAspectRatio="none"
+               aria-hidden="true">
+            <path d="M30,27 Q49.5,23 69,43"></path>
+            <path d="M69,43 Q63,58 49,68"></path>
+            <path d="M49,68 Q34,50 30,27"></path>
+          </svg>
+
+          <!-- hotspots live ON THE IMAGE -->
+          <button class="hero-hotspot h1 active" data-hotspot="1" aria-label="Foundation">
+            <i></i><span class="mono">01</span>
+          </button>
+          <button class="hero-hotspot h2" data-hotspot="2" aria-label="Manage">
+            <i></i><span class="mono">02</span>
+          </button>
+          <button class="hero-hotspot h3" data-hotspot="3" aria-label="Grow">
+            <i></i><span class="mono">03</span>
+          </button>
+        </div>
+
+        <!-- hero text sits in viewport while the image slowly moves underneath -->
+        <div class="hero-copy">
+          <div class="hero-copy-step active" data-step="0">
+            <h1>DON'T JUST EARN.</h1>
+            <p class="hero-script">Build what comes next.</p>
+            <span class="hero-kicker mono">arthX / YOUR FINANCIAL WORLD</span>
+          </div>
+
+          <div class="hero-copy-step" data-step="1">
+            <p class="hero-big"><em>Understand</em><br>your money.</p>
+          </div>
+
+          <div class="hero-copy-step" data-step="2">
+            <p class="hero-big"><em>Learn</em><br>investing.</p>
+          </div>
+
+          <div class="hero-copy-step" data-step="3">
+            <p class="hero-big"><em>Build</em><br>your portfolio.</p>
+          </div>
+
+          <div class="hero-copy-step" data-step="4">
+            <p class="hero-big">Make smarter<br><em>financial</em> decisions.</p>
+          </div>
+        </div>
+
+        <!-- hotspot detail card -->
+        <div class="hotspot-card visible" id="hotspotCard">
+          <span class="mono" id="hotspotKicker">01 — FOUNDATION</span>
+          <h3 id="hotspotTitle">Build Your Financial Foundation</h3>
+          <p id="hotspotText">Understand your income, spending, savings, risk and financial position before making bigger decisions.</p>
+        </div>
+
+      </div>
+
+      <!-- ~9 viewport heights for the complete hero/image journey -->
+      <div class="hero-scroll-space"></div>
+    </section>
+
+    <!-- ======================================================
+         WHY arthX — CIRCLE, THEN THE CIRCLE BECOMES IMAGE 02
+         One pinned scene: circle rises + grows → 3 reasons cycle
+         inside it → the circle's own surface crossfades from the
+         cream "why" content into background2.png. There is no
+         blank section between "why arthX" and Image 02 — the
+         circle IS the bridge.
+    ======================================================= -->
+    <section id="reasons" class="reasons-scene" data-nav-mode="dark">
+      <div class="reasons-pin" id="reasonsPin">
+
+        <div class="reasons-circle" id="reasonsCircle">
+
+          <div class="circle-title" id="circleTitle">
+            <span class="mono">WHY arthX</span>
+            <h2>3 Reasons<br>to choose <em>arthX</em></h2>
+          </div>
+
+          <div class="reason-stage" id="reasonStage">
+
+            <article class="reason-card active" data-reason="1">
+              <div class="reason-number mono">01</div>
+              <div class="reason-copy">
+                <h3>Personalized</h3>
+                <p>Financial guidance based on your income, capital, risk and goals — not generic advice.</p>
+              </div>
+              <div class="reason-motif" aria-hidden="true">
+                <svg viewBox="0 0 200 200">
+                  <circle cx="100" cy="100" r="86" class="motif-ring"/>
+                  <circle cx="100" cy="100" r="56" class="motif-ring"/>
+                  <circle cx="100" cy="100" r="26" class="motif-ring motif-ring-fill"/>
+                </svg>
+              </div>
+            </article>
+
+            <article class="reason-card" data-reason="2">
+              <div class="reason-number mono">02</div>
+              <div class="reason-copy">
+                <h3>Learn + Act</h3>
+                <p>arthX doesn't just tell you what to do; it helps you understand finance and make informed decisions.</p>
+              </div>
+              <div class="reason-motif" aria-hidden="true">
+                <svg viewBox="0 0 200 200">
+                  <polyline points="20,150 65,110 100,130 145,60 180,80" class="motif-line"/>
+                  <circle cx="180" cy="80" r="4" class="motif-dot"/>
+                </svg>
+              </div>
+            </article>
+
+            <article class="reason-card" data-reason="3">
+              <div class="reason-number mono">03</div>
+              <div class="reason-copy">
+                <h3>One Financial Companion</h3>
+                <p>Learn, manage money, build portfolios, analyze investments, and even evaluate business opportunities in one place.</p>
+              </div>
+              <div class="reason-motif" aria-hidden="true">
+                <svg viewBox="0 0 200 200">
+                  <circle cx="80" cy="100" r="52" class="motif-ring"/>
+                  <circle cx="128" cy="100" r="52" class="motif-ring"/>
+                </svg>
+              </div>
+            </article>
+
+          </div>
+
+        </div>
+      </div>
+
+      <div class="reasons-scroll-space"></div>
+    </section>
+
+    <!-- ======================================================
+         IMAGE 02 — background2.png — its own scroll journey
+         Same vertical-pan language as the hero, shorter, so it
+         reads as a continuation of the story rather than a repeat.
+    ======================================================= -->
+    <section id="imageTwo" class="image-two-story" data-nav-mode="light">
+      <div class="image-two-pin">
+
+        <div class="image-two-canvas" id="imageTwoCanvas">
+          <img src="background2.png"
+               class="image-two-image"
+               id="imageTwoImage"
+               alt="Mumbai coastline and skyline — arthX Image 02">
+          <div class="hero-shade image-two-shade"></div>
+        </div>
+
+        <div class="image-two-caption">
+          <span class="mono image-two-index" id="imageTwoIndex">02 / 01</span>
+          <p id="imageTwoText">A city built on markets, tides and momentum.</p>
+        </div>
+
+      </div>
+      <div class="image-two-scroll-space"></div>
+    </section>
+
+    <!-- ======================================================
+         LEARN — normal webpage section, editorial layout
+         with clearly-labelled image placeholders.
+    ======================================================= -->
+    <section id="learn" class="content-section learn-section" data-nav-mode="dark">
+      <div class="content-grid learn-grid">
+
+        <div class="content-copy" data-reveal>
+          <span class="mono section-kicker">01 — LEARN</span>
+          <h2 class="section-heading">Learn before<br>you deploy.</h2>
+          <p class="section-body">Financial knowledge should not be separated from financial action. arthX helps you understand markets, asset classes, risk and financial concepts so decisions come from understanding, not noise.</p>
+          <ul class="term-list mono">
+            <li>Markets</li>
+            <li>Asset classes</li>
+            <li>Risk</li>
+            <li>Portfolio construction</li>
+          </ul>
+        </div>
+
+        <div class="learn-visuals">
+          <div class="img-placeholder learn-image-01" data-reveal>
+            <img id="learn-image-01" src="images/learn-01-house.jpg" alt="Learn visual 01 — financial foundations">
+            <span class="mono placeholder-label">LEARN — 01</span>
+          </div>
+          <div class="img-placeholder learn-image-02" data-reveal data-reveal-delay="1">
+            <img id="learn-image-02" src="images/learn-02-analysis.jpg" alt="Learn visual 02 — financial analysis">
+            <span class="mono placeholder-label">LEARN — 02</span>
+          </div>
+          <div class="img-placeholder learn-image-03" data-reveal data-reveal-delay="2">
+            <img id="learn-image-03" src="images/learn-03-planning.jpg" alt="Learn visual 03 — financial planning">
+            <span class="mono placeholder-label">LEARN — 03</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================
+         BUILD — normal webpage section, progression + portfolio
+    ======================================================= -->
+    <section id="build" class="content-section build-section" data-nav-mode="dark">
+      <div class="content-grid build-grid">
+
+        <div class="content-copy" data-reveal>
+          <span class="mono section-kicker">02 — BUILD</span>
+          <h2 class="section-heading">Don't just invest.<br>Build.</h2>
+          <p class="section-body">Build a financial strategy around your goals, risk tolerance and time horizon.</p>
+
+          <div class="build-steps mono">
+            <span>Goals</span><i></i>
+            <span>Risk</span><i></i>
+            <span>Time Horizon</span><i></i>
+            <span>Strategy</span><i></i>
+            <span>Portfolio</span>
+          </div>
+
+          <div class="build-visuals">
+            <div class="img-placeholder build-image-01" data-reveal>
+              <img id="build-image-01" src="images/build-01-farmer.jpg" alt="Build visual 01 — real-world income">
+              <span class="mono placeholder-label">BUILD — 01</span>
+            </div>
+            <div class="img-placeholder build-image-02" data-reveal data-reveal-delay="1">
+              <img id="build-image-02" src="images/build-02-kirana.jpg" alt="Build visual 02 — small business entrepreneurship">
+              <span class="mono placeholder-label">BUILD — 02</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="portfolio-visual" id="portfolioVisual" data-reveal>
+          <span class="mono portfolio-amount">₹10,00,000</span>
+          <div class="portfolio-bars">
+            <div class="portfolio-bar" style="--pct:55" data-reveal><i></i><span class="mono">Equity <b>55%</b></span></div>
+            <div class="portfolio-bar" style="--pct:25" data-reveal data-reveal-delay="1"><i></i><span class="mono">Debt <b>25%</b></span></div>
+            <div class="portfolio-bar" style="--pct:10" data-reveal data-reveal-delay="2"><i></i><span class="mono">Gold <b>10%</b></span></div>
+            <div class="portfolio-bar" style="--pct:5" data-reveal data-reveal-delay="3"><i></i><span class="mono">Cash <b>5%</b></span></div>
+            <div class="portfolio-bar" style="--pct:5" data-reveal data-reveal-delay="4"><i></i><span class="mono">Global <b>5%</b></span></div>
+          </div>
+          <div class="img-placeholder build-image-03" data-reveal data-reveal-delay="2">
+            <img id="build-image-03" src="images/build-03-tailor.jpg" alt="Build visual 03 — livelihood and financial independence">
+            <span class="mono placeholder-label">BUILD — 03</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================
+         FINANCIAL INTELLIGENCE — dark data layer
+    ======================================================= -->
+    <section id="intelligence" class="content-section intelligence-section" data-nav-mode="light">
+      <div class="content-narrow" data-reveal>
+        <span class="mono section-kicker light">03 — INTELLIGENCE</span>
+        <h2 class="section-heading light">Beyond information.<br><em>Intelligence.</em></h2>
+      </div>
+
+      <div class="pipeline" id="pipeline" data-reveal>
+        <svg class="pipeline-line" viewBox="0 0 1000 60" preserveAspectRatio="none" aria-hidden="true">
+          <path id="pipelinePath" d="M10,30 L990,30"/>
+        </svg>
+        <div class="pipeline-nodes mono">
+          <span>Markets</span>
+          <span>Data</span>
+          <span>Signals</span>
+          <span>Analysis</span>
+          <span>Decision</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================
+         MARKET — dark environment, restrained
+    ======================================================= -->
+    <section id="market" class="content-section market-section" data-nav-mode="light">
+      <div class="content-narrow" data-reveal>
+        <span class="mono section-kicker light">04 — MARKET</span>
+        <h2 class="section-heading light">The market<br>doesn't wait.</h2>
+      </div>
+      <div class="market-terms mono" data-reveal data-reveal-delay="1">
+        <span>Equities</span>
+        <span>Volatility</span>
+        <span>Macro</span>
+        <span>Risk</span>
+      </div>
+    </section>
+
+    <!-- ======================================================
+         FINY / arthX AI
+    ======================================================= -->
+    <section id="finy" class="content-section finy-section" data-nav-mode="dark">
+      <div class="content-narrow" data-reveal>
+        <span class="mono section-kicker">05 — arthX AI</span>
+        <h2 class="section-heading">Don't search for<br>financial answers.<br><em>Ask arthX.</em></h2>
+        <p class="section-body">Your intelligent financial interface.</p>
+      </div>
+
+      <div class="finy-questions" data-reveal data-reveal-delay="1">
+        <p>"How much should I invest every month?"</p>
+        <p>"Why did my portfolio fall today?"</p>
+        <p>"What happens if I increase my equity allocation?"</p>
+        <p>"How much tax could I owe?"</p>
+        <p>"Am I overexposed to one sector?"</p>
+        <p>"Ask more such relevant question to arthX AI!"</p>
+      </div>
+    </section>
+
+    <!-- ======================================================
+         IMAGE 03 REVEAL → ENTERPRISE
+         background3.png becomes the institutional environment.
+    ======================================================= -->
+    <section id="enterprise" class="enterprise-scene" data-nav-mode="light">
+      <div class="enterprise-pin" id="enterprisePin">
+
+        <div class="enterprise-image" id="enterpriseImage">
+          <img src="background3.png" alt="Diamond Club — institutional business district, arthX Image 03">
+        </div>
+        <div class="enterprise-shade"></div>
+
+        <div class="enterprise-content" id="enterpriseContent">
+          <span class="mono section-kicker light">06 — ENTERPRISE</span>
+          <h2 class="section-heading light">The financial<br>world is bigger<br>than your portfolio.</h2>
+          <p class="section-body light">arthX extends beyond personal portfolio management into business and financial analysis.</p>
+          <ul class="capability-list mono">
+            <li><span>01</span>Business Assessment</li>
+            <li><span>02</span>Market Analysis</li>
+            <li><span>03</span>Scheme Calculator</li>
+          </ul>
+        </div>
+
+      </div>
+      <div class="enterprise-scroll-space"></div>
+    </section>
+
+    <!-- ======================================================
+         FINANCIAL JOURNEY
+    ======================================================= -->
+    <section id="journey" class="content-section journey-section" data-nav-mode="dark">
+      <span class="mono section-kicker journey-kicker">THE arthX LIFECYCLE</span>
+      <div class="journey-list" id="journeyList">
+        <div class="journey-step" data-step="01">
+          <span class="mono journey-number">01</span>
+          <h3>Money</h3>
+          <p>Know your financial position.</p>
+        </div>
+        <div class="journey-step" data-step="02">
+          <span class="mono journey-number">02</span>
+          <h3>Learn</h3>
+          <p>Understand the financial world.</p>
+        </div>
+        <div class="journey-step" data-step="03">
+          <span class="mono journey-number">03</span>
+          <h3>Plan</h3>
+          <p>Define goals and constraints.</p>
+        </div>
+        <div class="journey-step" data-step="04">
+          <span class="mono journey-number">04</span>
+          <h3>Build</h3>
+          <p>Construct a strategy.</p>
+        </div>
+        <div class="journey-step" data-step="05">
+          <span class="mono journey-number">05</span>
+          <h3>Invest</h3>
+          <p>Deploy and monitor capital.</p>
+        </div>
+        <div class="journey-step" data-step="06">
+          <span class="mono journey-number">06</span>
+          <h3>Protect</h3>
+          <p>Manage risk and financial safety.</p>
+        </div>
+        <div class="journey-step" data-step="07">
+          <span class="mono journey-number">07</span>
+          <h3>Grow</h3>
+          <p>Improve financial decisions over time.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================
+         MONEY IS PERSONAL
+    ======================================================= -->
+    <section id="personal" class="content-section personal-section" data-nav-mode="dark">
+      <div class="content-narrow" data-reveal>
+        <h2 class="section-heading">Money is<br>personal.</h2>
+        <p class="section-body personal-lines">
+          Your goals are different.<br>
+          Your risk is different.<br>
+          Your timeline is different.<br>
+          Your decisions should be too.
+        </p>
+        <p class="section-body personal-adapt mono">arthX adapts to you.</p>
+      </div>
+      <div class="personal-tags" data-reveal data-reveal-delay="1">
+        <span>Goals</span>
+        <span>Risk Profile</span>
+        <span>Time Horizon</span>
+        <span>Assets</span>
+        <span>Liabilities</span>
+        <span>Income</span>
+        <span>Investment Behaviour</span>
+      </div>
+    </section>
+
+    <!-- ======================================================
+         FINAL PHILOSOPHY
+    ======================================================= -->
+    <section id="philosophy" class="content-section philosophy-section" data-nav-mode="light">
+      <div class="content-narrow" data-reveal>
+        <h2 class="section-heading light">Better money<br>starts with<br>better decisions.</h2>
+        <p class="philosophy-words mono">Understand. Build. Invest. Protect.</p>
+        <p class="section-body light">arthX brings your money, knowledge, investments, market intelligence and financial safety into one connected system.</p>
+      </div>
+    </section>
+
+    <!-- ======================================================
+         FINAL LANDSCAPE + FOOTER
+    ======================================================= -->
+    <section id="finalLandscape" class="final-landscape" data-nav-mode="light">
+      <div class="final-copy" data-reveal>
+        <span class="mono">WELCOME TO ARTHX.</span>
+        <h2>Your financial world,<br><em>connected.</em></h2>
+      </div>
+      <div class="final-wordmark" aria-hidden="true">arthX</div>
+
+      <footer class="site-footer">
+        <div class="footer-row">
+          <span class="footer-brand">arthX</span>
+          <nav class="footer-links mono">
+            <a href="#">Money</a>
+            <a href="#learn">Learn</a>
+            <a href="#build">Build</a>
+            <a href="#">Invest</a>
+            <a href="#enterprise">Enterprise</a>
+            <a href="#finy">arthX AI</a>
+          </nav>
+        </div>
+        <div class="footer-row footer-row-bottom mono">
+          <span>DON'T JUST EARN.</span>
+          <span>© 2026 arthX. Built for India.</span>
+        </div>
+      </footer>
+    </section>
+
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
