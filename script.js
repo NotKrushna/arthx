@@ -38,67 +38,35 @@ function createVerticalPan(canvas){
 }
 
 /* ============================================================
-   1. OPENING — ₹ PORTAL
-   (unchanged architecture: maroon screen → loading → mask reveal)
+   1. PRELOADER (ERA-STYLE)
 ============================================================ */
-const doorScreen = document.getElementById('door-screen');
-const doorPreloader = document.getElementById('doorPreloader');
+const preloader = document.getElementById('door-screen');
+const masterPreloader = document.getElementById('masterPreloader');
 const loadFill = document.getElementById('loadFill');
-const maskText = document.getElementById('maskRupeeText');
-const doorMaskSvg = document.getElementById('doorMaskSvg');
-const maskBg = document.getElementById('maskBg');
-const rupeeMask = document.getElementById('rupeeMask');
-
-function sizeOpening(){
-  const w = innerWidth;
-  const h = innerHeight;
-
-  doorMaskSvg.setAttribute('viewBox', `0 0 ${w} ${h}`);
-  rupeeMask.setAttribute('x', 0);
-  rupeeMask.setAttribute('y', 0);
-  rupeeMask.setAttribute('width', w);
-  rupeeMask.setAttribute('height', h);
-
-  maskBg.setAttribute('x', 0);
-  maskBg.setAttribute('y', 0);
-  maskBg.setAttribute('width', w);
-  maskBg.setAttribute('height', h);
-
-  maskText.setAttribute('x', w / 2);
-  maskText.setAttribute('y', h / 2);
-}
-sizeOpening();
-addEventListener('resize', sizeOpening);
 
 document.documentElement.style.overflow = 'hidden';
 document.body.style.overflow = 'hidden';
-gsap.set(maskText, {fontSize:0});
 
-gsap.to(loadFill,{
-  height:'100%',
-  duration:1.8,
-  ease:'power1.inOut',
-  onComplete(){
-    const start = Math.min(innerWidth,innerHeight) * .24;
-    const end = Math.max(innerWidth,innerHeight) * 9;
+// Reset load bar
+gsap.set(loadFill, { xPercent: -100 });
 
+// Animate load bar
+gsap.to(loadFill, {
+  xPercent: 0,
+  duration: 1.8,
+  ease: 'power2.inOut',
+  onComplete() {
     gsap.timeline({
-      onComplete(){
-        doorScreen.style.display='none';
-        doorScreen.setAttribute('aria-hidden','true');
+      onComplete() {
+        if(preloader) preloader.style.display = 'none';
+        if(masterPreloader) masterPreloader.style.display = 'none';
         document.documentElement.style.overflow = '';
         document.body.style.overflow = '';
         ScrollTrigger.refresh(true);
       }
     })
-    .to(doorPreloader,{opacity:0,duration:.35,ease:'power2.inOut'})
-    .call(()=>{
-      // From here on the masked ₹ cutout is the ONLY opaque layer left.
-      doorScreen.style.background = 'transparent';
-    })
-    .to(maskText,{fontSize:start,duration:.5,ease:'back.out(1.6)'})
-    .to(maskText,{fontSize:end,duration:1.45,ease:'power4.in'})
-    .to(doorScreen,{opacity:0,duration:.18},'-=.12');
+    .to(preloader, { opacity: 0, duration: 0.8, ease: 'power2.out' })
+    .to(masterPreloader, { yPercent: -100, duration: 1.2, ease: 'power3.inOut' }, "-=0.4");
   }
 });
 
