@@ -1,5 +1,5 @@
 /* ============================================================
-   FINY ACADEMY MODULE — arthX
+   arthX ACADEMY MODULE
    Handles courses, XP, and badges.
 ============================================================ */
 

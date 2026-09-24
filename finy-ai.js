@@ -1,5 +1,5 @@
 /* ============================================================
-   FINY AI MODULE — arthX
+   arthX AI MODULE
    Simulated AI Chat Interface & Context Awareness
 ============================================================ */
 
@@ -69,11 +69,11 @@
         } 
         else if (lowerQ.includes('dsr') || lowerQ.includes('dscr') || lowerQ.includes('loan') || lowerQ.includes('business')) {
           aiResponse = "A healthy Debt Service Coverage Ratio (DSCR) for a rural enterprise is typically 1.25x or higher. This means your Net Operating Income is 125% of your debt obligations. You can model this exactly in our Enterprise Advisor tab.";
-          citations.push({ source: 'FINY Academy', path: 'Rural Enterprise Finance Module' });
+          citations.push({ source: 'arthX Academy', path: 'Rural Enterprise Finance Module' });
           citations.push({ source: 'Investopedia', path: 'https://www.investopedia.com/terms/d/dscr.asp' });
         }
         else if (lowerQ.includes('hello') || lowerQ.includes('hi')) {
-          aiResponse = "Hello! I am FINY. I'm connected to your financial data and our secure knowledge base. How can I assist you today?";
+          aiResponse = "Hello! I am arthX. I'm connected to your financial data and our secure knowledge base. How can I assist you today?";
         }
         else {
           aiResponse = `That's a great question about "${query}". I can help you analyze risk and project compound growth. Just let me know what specific assets you're looking at.`;
@@ -103,7 +103,7 @@
 
     let avatar = '';
     if (sender === 'ai') {
-      avatar = `<div style="width:30px; height:30px; border-radius:50%; background:var(--accent-gold); display:flex; align-items:center; justify-content:center; flex-shrink:0; font-family:var(--font-serif); color:var(--bg-dark); font-weight:bold;">F</div>`;
+      avatar = `<div style="width:30px; height:30px; border-radius:50%; background:var(--accent-gold); display:flex; align-items:center; justify-content:center; flex-shrink:0; font-family:var(--font-serif); color:var(--bg-dark); font-weight:bold;">A</div>`;
     } else {
       avatar = `<div style="width:30px; height:30px; border-radius:50%; background:rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; flex-shrink:0; font-family:var(--font-serif); color:var(--text-light); font-weight:bold;">U</div>`;
     }

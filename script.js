@@ -1,6 +1,18 @@
 gsap.registerPlugin(ScrollTrigger);
 
 /* ============================================================
+   SMOOTH SCROLL (LENIS)
+============================================================ */
+const lenis = new Lenis({
+  lerp: 0.12, // Faster, snappier scroll response
+  smoothWheel: true
+});
+
+lenis.on('scroll', ScrollTrigger.update);
+gsap.ticker.add((time) => { lenis.raf(time * 1000); });
+gsap.ticker.lagSmoothing(0);
+
+/* ============================================================
    BRAND ORBIT — GSAP-controlled SVG rotation
    CSS transforms on SVG <g> elements are inconsistent across
    browsers. Rotate only the orbit group; the center mark stays
@@ -8,7 +20,7 @@ gsap.registerPlugin(ScrollTrigger);
 ============================================================ */
 const brandOrbit = document.querySelector('.brand-orbit');
 if(brandOrbit){
-  gsap.set(brandOrbit, {transformOrigin:'50% 50%'});
+  gsap.set(brandOrbit, {transformOrigin:'50px 50px'});
   gsap.to(brandOrbit, {
     rotation:360,
     duration:7.5,
@@ -65,8 +77,9 @@ gsap.to(loadFill, {
         ScrollTrigger.refresh(true);
       }
     })
-    .to(preloader, { opacity: 0, duration: 0.8, ease: 'power2.out' })
-    .to(masterPreloader, { yPercent: -100, duration: 1.2, ease: 'power3.inOut' }, "-=0.4");
+    .to('#maskRupeeText', { scale: 150, transformOrigin: 'center center', duration: 1.6, ease: 'power3.inOut' })
+    .to(preloader, { opacity: 0, duration: 0.5, ease: 'power2.out' }, "-=0.4")
+    .to(masterPreloader, { yPercent: -100, duration: 1.2, ease: 'power3.inOut' }, "-=1.2");
   }
 });
 
@@ -188,7 +201,7 @@ ScrollTrigger.create({
   trigger:'#heroStory',
   start:'top top',
   end:'bottom bottom',
-  scrub:1,
+  scrub:0.3,
   onUpdate(self){
     heroPan.apply(self.progress);
 
@@ -269,7 +282,7 @@ ScrollTrigger.create({
   trigger:'#reasons',
   start:'top top',
   end:'bottom bottom',
-  scrub:1,
+  scrub:0.3,
   onUpdate(self){
     const p = self.progress;
 
@@ -327,7 +340,7 @@ ScrollTrigger.create({
   trigger:'#imageTwo',
   start:'top top',
   end:'bottom bottom',
-  scrub:1,
+  scrub:0.3,
   onUpdate(self){
     imageTwoPan.apply(self.progress);
     const idx = Math.min(imageTwoStates.length-1, Math.floor(self.progress * imageTwoStates.length));
@@ -340,7 +353,7 @@ imageTwoImage.addEventListener('load',()=>ScrollTrigger.refresh());
 /* ============================================================
    7. GENERIC SCROLL REVEALS
    One shared IntersectionObserver drives every editorial section
-   (Learn, Build, Intelligence, Market, FINY, Personal, Philosophy,
+   (Learn, Build, Intelligence, Market, arthX, Personal, Philosophy,
    Final) — a single orchestrated reveal system rather than a
    scroll listener per element.
 ============================================================ */
@@ -385,7 +398,7 @@ ScrollTrigger.create({
   trigger:'#enterprise',
   start:'top top',
   end:'bottom bottom',
-  scrub:1,
+  scrub:0.3,
   onUpdate(self){
     const p = self.progress;
     const imgOpacity = Math.min(1, p / .28);

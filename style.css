@@ -57,10 +57,12 @@ img{max-width:100%}
 }
 
 #maskRupeeText{
+  x: 50%;
+  y: 50%;
   transform-origin:center;
   paint-order:stroke fill;
   fill:#000;
-  font-size:0;
+  font-size:25vh;
   dominant-baseline:central;
   text-anchor:middle;
 }
@@ -231,8 +233,8 @@ img{max-width:100%}
 }
 .brand-seal svg{width:100%;height:100%}
 .brand-orbit{
-  transform-box:fill-box;
-  transform-origin:50% 50%;
+  transform-box:view-box;
+  transform-origin:50px 50px;
   will-change:transform;
 }
 .brand-orbit-text{
@@ -935,7 +937,7 @@ img{max-width:100%}
 }
 
 /* =======================
-   FINY
+   arthX AI
 ======================= */
 .finy-section{background:var(--paper)}
 .finy-questions{
@@ -1220,20 +1222,24 @@ img{max-width:100%}
 .nav-auth-btn,
 .nav-dash-btn,
 .nav-logout-btn{
-  background:none;
-  border:1px solid var(--line-light);
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.2);
   color:var(--paper);
-  padding:6px 14px;
+  padding:8px 18px;
   cursor:pointer;
-  border-radius:4px;
+  border-radius:20px;
   font-size:.65rem;
-  transition:all .25s ease;
+  letter-spacing:1px;
+  transition:all .3s cubic-bezier(.25,1,.5,1);
+  backdrop-filter: blur(8px);
 }
 .nav-auth-btn:hover,
 .nav-dash-btn:hover,
 .nav-logout-btn:hover{
   background:var(--violet);
   border-color:var(--violet);
+  box-shadow:0 4px 15px rgba(111,47,224,0.4);
+  transform: translateY(-2px);
 }
 .nav-mode-dark .nav-auth-btn,
 .nav-mode-dark .nav-dash-btn,
@@ -1956,29 +1962,29 @@ img{max-width:100%}
 }
 
 /* =======================
-   FINY AI FLOATING ACTION BUTTON (FAB)
+   arthX AI FLOATING ACTION BUTTON (FAB)
 ======================= */
 .finy-fab {
   position: fixed;
   bottom: 30px;
   right: 30px;
-  width: 60px;
-  height: 60px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
-  background: var(--accent-gold);
+  background: linear-gradient(135deg, var(--accent-gold), #e8c985);
   color: var(--bg-dark);
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 10px 30px rgba(184, 134, 11, 0.4);
+  box-shadow: 0 10px 30px rgba(184, 134, 11, 0.4), inset 0 1px 0 rgba(255,255,255,0.4);
   z-index: 9999;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
 }
 .finy-fab:hover {
-  transform: translateY(-5px) scale(1.05);
-  box-shadow: 0 15px 40px rgba(184, 134, 11, 0.6);
+  transform: translateY(-6px) scale(1.08);
+  box-shadow: 0 16px 40px rgba(184, 134, 11, 0.5), inset 0 1px 0 rgba(255,255,255,0.6);
 }
 .finy-fab svg {
   width: 24px;
